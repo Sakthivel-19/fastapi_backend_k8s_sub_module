@@ -1,0 +1,31 @@
+name: Update Main Repository Submodule
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-main-repo:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout sub-repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      - name: Checkout main repository
+        uses: actions/checkout@v2
+        with:
+          repository: Sakthivel-19/fastapi_backend_k8s
+          path: main-repository
+          token: ${{ secrets.MAIN_REPO_TOKEN }}  # Use a GitHub token with repo permissions
+
+      - name: Update submodule reference
+        run: |
+          cd main-repository/app
+          git submodule update --remote fastapi_backend_k8s_sub_module
+          git add fastapi_backend_k8s_sub_module
+          git commit -m "Update submodule reference to latest commit in fastapi_backend_k8s_sub_module"
+          git push origin main
